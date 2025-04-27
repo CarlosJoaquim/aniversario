@@ -23,12 +23,13 @@
     <!-- CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/galeria.css">
+    <link rel="stylesheet" href="assets/css/timiline.css">
     
     <!-- Favicon -->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <!-- Cabeçalho Dinâmico será carregado aqui -->
+    <!-- Cabeçalho -->
     <header id="dynamic-header">
         <div class="header-container">
             <h1 class="logo">Lúcia <span>Mendes</span></h1>
@@ -48,14 +49,13 @@
     
     <!-- Conteúdo Principal -->
     <main id="main-content">
-        <!-- Conteúdo será carregado dinamicamente aqui -->
         <div class="loading-spinner">
             <div class="spinner"></div>
             <p>Carregando presente de aniversário...</p>
         </div>
     </main>
     
-    <!-- Rodapé Dinâmico será carregado aqui -->
+    <!-- Rodapé -->
     <footer id="dynamic-footer">
         <div class="container">
             <div class="footer-content">
@@ -108,8 +108,23 @@
     <!-- Scripts -->
     <script src="assets/js/main.js"></script>
     <script>
-        // Inicializa o modal
+        // Inicialização do site
         document.addEventListener('DOMContentLoaded', function() {
+            // Configurações iniciais
+            initModal();
+            setupMenuMobile();
+            setupBackToTop();
+            updateYear();
+            
+            // Carrega a página inicial
+            loadPage('home');
+            
+            // Configura a navegação
+            setupNavigation();
+        });
+
+        // Funções básicas
+        function initModal() {
             const modal = document.getElementById('generic-modal');
             const closeBtn = document.querySelector('.close-modal');
             
@@ -122,11 +137,9 @@
                     modal.style.display = 'none';
                 }
             });
-            
-            // Atualiza o ano no footer
-            document.getElementById('year').textContent = new Date().getFullYear();
-            
-            // Configura o menu mobile
+        }
+
+        function setupMenuMobile() {
             const menuToggle = document.querySelector('.menu-toggle');
             const mainNav = document.querySelector('.main-nav');
             
@@ -147,8 +160,9 @@
                     });
                 });
             }
-            
-            // Configura o botão de voltar ao topo
+        }
+
+        function setupBackToTop() {
             const backToTop = document.getElementById('back-to-top');
             
             window.addEventListener('scroll', function() {
@@ -162,11 +176,13 @@
             backToTop.addEventListener('click', function() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
-            
-            // Carrega a página inicial
-            loadPage('home');
-            
-            // Configura a navegação
+        }
+
+        function updateYear() {
+            document.getElementById('year').textContent = new Date().getFullYear();
+        }
+
+        function setupNavigation() {
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -174,15 +190,14 @@
                     loadPage(page);
                 });
             });
-        });
-        
-        // Função para carregar páginas
+        }
+
+        // Função principal para carregar páginas
         function loadPage(pageName) {
             showLoading();
             document.body.className = `${pageName}-page`;
             updateActiveNav(pageName);
             
-            // Simula um pequeno atraso para melhor UX
             setTimeout(function() {
                 fetch(`includes/${pageName}-content.html`)
                     .then(response => {
@@ -192,16 +207,15 @@
                     .then(html => {
                         document.getElementById('main-content').innerHTML = html;
                         setupPageSpecificFeatures(pageName);
-                        hideLoading();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     })
                     .catch(error => {
                         console.error(error);
-                        showError(`Não foi possível carregar a página ${pageName}. Por favor, tente novamente.`);
+                        showError(`Não foi possível carregar a página ${pageName}.`);
                     });
             }, 300);
         }
-        
+
         // Funções auxiliares
         function showLoading() {
             document.getElementById('main-content').innerHTML = `
@@ -211,11 +225,7 @@
                 </div>
             `;
         }
-        
-        function hideLoading() {
-            // O conteúdo será substituído pelo componente carregado
-        }
-        
+
         function showError(message) {
             document.getElementById('main-content').innerHTML = `
                 <div class="error-message">
@@ -226,7 +236,7 @@
                 </div>
             `;
         }
-        
+
         function updateActiveNav(pageName) {
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
@@ -235,59 +245,34 @@
                 }
             });
         }
-        
+
         function setupPageSpecificFeatures(pageName) {
             switch(pageName) {
-                case 'home':
-                    setupHomePage();
-                    break;
-                case 'timeline':
-                    setupTimelinePage();
-                    break;
-                case 'gallery':
-                    setupGalleryPage();
-                    break;
-                case 'messages':
-                    setupMessagesPage();
-                    break;
+                case 'home': setupHomePage(); break;
+                case 'timeline': setupTimelinePage(); break;
+                case 'gallery': setupGalleryPage(); break;
+                case 'messages': setupMessagesPage(); break;
             }
         }
-        
+
+        // Configurações específicas da página Home
         function setupHomePage() {
-            // Configurações específicas da página Home
             setupCountdown();
             setupHighlights();
             setupVideoPlayer();
             setupAnimations();
         }
-        
-        function setupTimelinePage() {
-            // Configurações específicas da página Timeline
-            setupTimeline();
-        }
-        
-        function setupGalleryPage() {
-            // Configurações específicas da página Gallery
-            setupGallery();
-        }
-        
-        function setupMessagesPage() {
-            // Configurações específicas da página Messages
-            setupMessages();
-        }
-        
-        // Implementações das funções específicas de cada página
+
         function setupCountdown() {
             function updateCountdown() {
                 const now = new Date();
-                const nextBirthday = new Date(now.getFullYear(), 7, 15); // 15 de Agosto (mês 7)
+                const nextBirthday = new Date(now.getFullYear(), 7, 15); // 15 de Agosto
                 
                 if (now > nextBirthday) {
                     nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
                 }
                 
                 const diff = nextBirthday - now;
-                
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -302,125 +287,58 @@
             setInterval(updateCountdown, 1000);
             updateCountdown();
         }
-        
+
         function setupHighlights() {
             const highlights = [
                 {
                     title: "Primeiro Encontro",
-                    image: "assets/images/highlight-1.jpg",
                     content: `
-                        <p>O dia em que nossas vidas começaram a se entrelaçar foi mágico. Lembro de cada detalhe:</p>
-                        <ul>
-                            <li>Seu sorriso tímido quando nos vimos pela primeira vez</li>
-                            <li>A forma como seus olhos brilhavam quando falava sobre seus sonhos</li>
-                            <li>Aquele momento constrangedor quando derrubamos o café</li>
-                        </ul>
-                        <p>Naquele momento, eu sabia que algo especial estava começando.</p>
-                        <img src="assets/images/memory-1.jpg" alt="Nosso primeiro encontro" class="modal-image">
+                        <p>O dia em que nossas vidas começaram a se entrelaçar foi mágico.</p>
+                        <img src="assets/images/memory-1.jpg" alt="Nosso primeiro encontro">
                     `,
-                    funnyText: "E pensar que você quase cancelou porque achou que eu poderia ser um serial killer!"
-                },
-                {
-                    title: "Primeira Viagem",
-                    image: "assets/images/highlight-2.jpg",
-                    content: `
-                        <p>Nossa primeira viagem juntos foi para as montanhas, e que aventura foi!</p>
-                        <ul>
-                            <li>Você reclamando do frio mesmo com três casacos</li>
-                            <li>Eu me perdendo na trilha e jurando que sabia o caminho</li>
-                            <li>Aquele pôr do sol que parecia ter sido pintado só para nós</li>
-                        </ul>
-                        <p>Foi quando descobri que viajar com você é sempre uma aventura, mesmo quando tudo dá errado.</p>
-                        <img src="assets/images/memory-2.jpg" alt="Nossa primeira viagem" class="modal-image">
-                    `,
-                    funnyText: "E você ainda insiste que não foi você quem esqueceu o mapa na pousada!"
-                },
-                {
-                    title: "Nosso Ritual",
-                    image: "assets/images/highlight-3.jpg",
-                    content: `
-                        <p>Nosso ritual de café da manhã aos domingos se tornou sagrado:</p>
-                        <ul>
-                            <li>Você fazendo aquela torrada perfeita (quase sempre queimada)</li>
-                            <li>Eu tentando fazer café e sempre deixando muito forte</li>
-                            <li>As horas passando enquanto falamos sobre tudo e nada</li>
-                        </ul>
-                        <p>São nesses pequenos momentos que nosso amor se fortalece.</p>
-                        <img src="assets/images/memory-3.jpg" alt="Nosso ritual de café" class="modal-image">
-                    `,
-                    funnyText: "Ainda bem que você não me processou por intoxicação alimentar com suas 'torradas artesanais'!"
+                    funnyText: "E pensar que você quase cancelou!"
                 }
+                // Adicione mais destaques conforme necessário
             ];
 
             document.querySelectorAll('.btn-read-more').forEach((btn, index) => {
                 btn.addEventListener('click', function() {
-                    const highlight = highlights[index];
-                    showModalContent(highlight.title, highlight.content, true);
+                    showModalContent(highlights[index].title, highlights[index].content, true);
                 });
-                
-                const funnyTextElement = document.createElement('p');
-                funnyTextElement.className = 'funny-text';
-                funnyTextElement.textContent = highlights[index].funnyText;
-                btn.closest('.highlight-content').appendChild(funnyTextElement);
             });
         }
-        
-        function showModalContent(title, content, isHTML = false) {
-            const modalBody = document.getElementById('modal-body');
-            const modal = document.getElementById('generic-modal');
-            
-            if (isHTML) {
-                modalBody.innerHTML = `<h2>${title}</h2>${content}`;
-            } else {
-                modalBody.innerHTML = `<h2>${title}</h2><p>${content}</p>`;
-            }
-            
-            modal.style.display = 'block';
-        }
-        
+
         function setupVideoPlayer() {
-            const videoWrapper = document.querySelector('.video-wrapper');
             const video = document.querySelector('.video-wrapper video');
             const playButton = document.querySelector('.play-button');
             
-            if (videoWrapper && video && playButton) {
+            if (video && playButton) {
                 playButton.addEventListener('click', function() {
-                    videoWrapper.classList.add('playing');
                     video.play();
                     playButton.style.display = 'none';
                 });
-                
-                video.addEventListener('click', function() {
-                    if (video.paused) {
-                        video.play();
-                        playButton.style.display = 'none';
-                    } else {
-                        video.pause();
-                        playButton.style.display = 'flex';
-                    }
-                });
             }
         }
-        
+
         function setupAnimations() {
-            const animateOnScroll = function() {
-                const elements = document.querySelectorAll('.fade-in, .slide-in, .zoom-in');
-                
-                elements.forEach(element => {
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const screenPosition = window.innerHeight / 1.3;
-                    
-                    if (elementPosition < screenPosition) {
-                        element.classList.add('animated');
+            window.addEventListener('scroll', function() {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    if (el.getBoundingClientRect().top < window.innerHeight - 100) {
+                        el.classList.add('animated');
                     }
                 });
-            };
-            
-            window.addEventListener('scroll', animateOnScroll);
-            animateOnScroll();
+            });
         }
-        
-        function setupTimeline() {
+
+        // Configurações específicas da página Timeline
+        function setupTimelinePage() {
+            // Garante que os títulos estão visíveis
+            const sectionTitle = document.querySelector('.timeline-section .section-title');
+            const sectionSubtitle = document.querySelector('.timeline-section .section-subtitle');
+            
+            if (sectionTitle) sectionTitle.style.opacity = '1';
+            if (sectionSubtitle) sectionSubtitle.style.opacity = '1';
+
             const timelineData = [
                 {
                     date: "15/08/2018",
@@ -490,8 +408,9 @@
                 });
             }
         }
-        
-        function setupGallery() {
+
+        // Configurações específicas da página Gallery
+        function setupGalleryPage() {
             const galleryData = [
                 {
                     image: "assets/images/gallery-1.jpg",
@@ -500,22 +419,22 @@
                 },
                 {
                     image: "assets/images/gallery-2.jpg",
-                    caption: "Primeira foto de mãos dadas - Você estava a fazer confusão nesse dia ",
+                    caption: "Primeira foto de mãos dadas - Você estava a fazer confusão nesse dia",
                     category: "viagens"
                 },
                 {
                     image: "assets/images/gallery-3.jpg",
-                    caption: "Foto bem fusca - Até que não és muito feia ",
+                    caption: "Foto bem fusca - Até que não és muito feia",
                     category: "datas-especiais"
                 },
                 {
                     image: "assets/images/gallery-4.jpg",
-                    caption: "Foto bem linda - Ela só está bonita porque eu estou na foto! ",
+                    caption: "Foto bem linda - Ela só está bonita porque eu estou na foto!",
                     category: "datas-especiais"
                 },
                 {
                     image: "assets/images/gallery-5.jpg",
-                    caption: "Uma foto no espelho - Brincamos atoa! ",
+                    caption: "Uma foto no espelho - Brincamos atoa!",
                     category: "datas-especiais"
                 }
             ];
@@ -587,7 +506,8 @@
             modal.style.display = 'block';
         }
         
-        function setupMessages() {
+        // Configurações específicas da página Messages
+        function setupMessagesPage() {
             const messagesData = [
                 {
                     title: "Por Que Eu Te Amo",
@@ -609,11 +529,13 @@
                 {
                     title: "Meu Dia Mais Feliz",
                     content: `
-                        <li>O meu dia mais feliz foi quando fomos à igreja juntos</li>
-                        <li>Você estava me empurrando na rua e foi super engraçado</li>
-                        <li>Eu ri tanto que parecia que o mundo inteiro estava no mesmo ritmo que a gente</li>
-                        <li>Aquela sensação de alegria e cumplicidade ficou gravada na minha memória</li>
-                        <li>Foi um momento simples, mas especial, que fez meu dia ser inesquecível</li>
+                        <ul>
+                            <li>O meu dia mais feliz foi quando fomos à igreja juntos</li>
+                            <li>Você estava me empurrando na rua e foi super engraçado</li>
+                            <li>Eu ri tanto que parecia que o mundo inteiro estava no mesmo ritmo que a gente</li>
+                            <li>Aquela sensação de alegria e cumplicidade ficou gravada na minha memória</li>
+                            <li>Foi um momento simples, mas especial, que fez meu dia ser inesquecível</li>
+                        </ul>
                     `,
                     date: "27/04/2025",
                     icon: "fas fa-sun"
@@ -621,30 +543,31 @@
                 {
                     title: "Meu Refúgio é Você",
                     content: `
-                        <li>Você é a pessoa que me faz sentir em casa, não importa onde esteja.</li>
-                        <li>Seu abraço é o meu porto seguro, o lugar onde tudo parece se acalmar.</li>
-                        <li>Com você, até os dias mais difíceis ficam mais leves e cheios de amor.</li>
-                        <li>A sua risada é a música mais bonita que poderia ouvir, sempre me fazendo sorrir também.</li>
-                        <li>Eu não preciso de mais nada quando estou ao seu lado, porque você já é tudo o que eu preciso.</li>
+                        <ul>
+                            <li>Você é a pessoa que me faz sentir em casa, não importa onde esteja.</li>
+                            <li>Seu abraço é o meu porto seguro, o lugar onde tudo parece se acalmar.</li>
+                            <li>Com você, até os dias mais difíceis ficam mais leves e cheios de amor.</li>
+                            <li>A sua risada é a música mais bonita que poderia ouvir, sempre me fazendo sorrir também.</li>
+                            <li>Eu não preciso de mais nada quando estou ao seu lado, porque você já é tudo o que eu preciso.</li>
+                        </ul>
                     `,
                     date: "27/04/2025",
                     icon: "fas fa-sun"
                 },
-
                 {
                     title: "O Melhor de Mim Está em Você",
                     content: `
-                        <li>Você tem a capacidade de iluminar os meus dias mais escuros com o seu sorriso.</li>
-                        <li>Mesmo nas horas mais difíceis, a sua presença faz tudo parecer mais fácil.</li>
-                        <li>Com você, aprendi a valorizar as pequenas coisas, aquelas que realmente importam.</li>
-                        <li>A cada dia que passa, vejo o quanto você me torna uma pessoa melhor.</li>
-                        <li>Estar com você é como viver em um sonho, onde tudo é mais doce e cheio de alegria.</li
+                        <ul>
+                            <li>Você tem a capacidade de iluminar os meus dias mais escuros com o seu sorriso.</li>
+                            <li>Mesmo nas horas mais difíceis, a sua presença faz tudo parecer mais fácil.</li>
+                            <li>Com você, aprendi a valorizar as pequenas coisas, aquelas que realmente importam.</li>
+                            <li>A cada dia que passa, vejo o quanto você me torna uma pessoa melhor.</li>
+                            <li>Estar com você é como viver em um sonho, onde tudo é mais doce e cheio de alegria.</li>
+                        </ul>
                     `,
                     date: "27/04/2025",
                     icon: "fas fa-heart"
                 }
-
-                
             ];
 
             const messagesContainer = document.querySelector('.messages-grid');
@@ -676,6 +599,15 @@
                     messagesContainer.appendChild(messageCard);
                 });
             }
+        }
+
+        // Funções para o modal
+        function showModalContent(title, content, isHTML) {
+            const modalBody = document.getElementById('modal-body');
+            const modal = document.getElementById('generic-modal');
+            
+            modalBody.innerHTML = isHTML ? `<h2>${title}</h2>${content}` : `<h2>${title}</h2><p>${content}</p>`;
+            modal.style.display = 'block';
         }
     </script>
 </body>
